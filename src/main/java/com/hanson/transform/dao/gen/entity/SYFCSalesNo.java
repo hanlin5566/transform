@@ -9,8 +9,8 @@ import com.hanson.base.annotation.AutoWriteParam;
 import com.hanson.base.mybatis.serializer.DatePattern;
 import com.hzcf.base.serializer.EnumJsonSerializer;
 /**
- * tb_syfc_sales_no 沈阳预售房产号
- * @author huhanlin 2019-02-09
+ * tb_syfc_sales_no 
+ * @author huhanlin 2019-02-28
  */
 @AutoWriteParam
 public class SYFCSalesNo {
@@ -20,7 +20,7 @@ public class SYFCSalesNo {
     private Integer id;
 
     /**
-     * 三方库中的编号
+     * 第三方编号
      */
     private Integer thirdNo;
 
@@ -35,12 +35,12 @@ public class SYFCSalesNo {
     private String salesNo;
 
     /**
-     * 开发商
+     * 开发商名称
      */
     private String company;
 
     /**
-     * 
+     * 开发商可读名称
      */
     private String companyFriendly;
 
@@ -50,12 +50,12 @@ public class SYFCSalesNo {
     private String programName;
 
     /**
-     * 项目位置
+     * 
      */
     private String programLocaltion;
 
     /**
-     * 
+     * 友好的项目地址
      */
     private String programLocaltionFriendly;
 
@@ -141,6 +141,17 @@ public class SYFCSalesNo {
     private Integer otherBuildCount;
 
     /**
+     * 
+     */
+    private String remark;
+
+    /**
+     * 
+     */
+    @JsonSerialize(using = EnumJsonSerializer.class)
+    private DataStatus dataStatus;
+
+    /**
      * 创建人
      */
     private Integer createUid;
@@ -157,16 +168,10 @@ public class SYFCSalesNo {
     private Date createTime;
 
     /**
-     * 修改时间
+     * 创建时间
      */
     @DateTimeFormat(pattern = DatePattern.ISO_DATE)
     private Date updateTime;
-
-    /**
-     * 数据状态（0.未知，1.正常，-1.删除)
-     */
-    @JsonSerialize(using = EnumJsonSerializer.class)
-    private DataStatus dataStatus;
 
     /**
      * 
@@ -185,16 +190,16 @@ public class SYFCSalesNo {
     }
 
     /**
-     * 三方库中的编号
-     * @return third_no 三方库中的编号
+     * 第三方编号
+     * @return third_no 第三方编号
      */
     public Integer getThirdNo() {
         return thirdNo;
     }
 
     /**
-     * 三方库中的编号
-     * @param thirdNo 三方库中的编号
+     * 第三方编号
+     * @param thirdNo 第三方编号
      */
     public void setThirdNo(Integer thirdNo) {
         this.thirdNo = thirdNo;
@@ -233,32 +238,32 @@ public class SYFCSalesNo {
     }
 
     /**
-     * 开发商
-     * @return company 开发商
+     * 开发商名称
+     * @return company 开发商名称
      */
     public String getCompany() {
         return company;
     }
 
     /**
-     * 开发商
-     * @param company 开发商
+     * 开发商名称
+     * @param company 开发商名称
      */
     public void setCompany(String company) {
         this.company = company == null ? null : company.trim();
     }
 
     /**
-     * 
-     * @return company_friendly 
+     * 开发商可读名称
+     * @return company_friendly 开发商可读名称
      */
     public String getCompanyFriendly() {
         return companyFriendly;
     }
 
     /**
-     * 
-     * @param companyFriendly 
+     * 开发商可读名称
+     * @param companyFriendly 开发商可读名称
      */
     public void setCompanyFriendly(String companyFriendly) {
         this.companyFriendly = companyFriendly == null ? null : companyFriendly.trim();
@@ -281,32 +286,32 @@ public class SYFCSalesNo {
     }
 
     /**
-     * 项目位置
-     * @return program_localtion 项目位置
+     * 
+     * @return program_localtion 
      */
     public String getProgramLocaltion() {
         return programLocaltion;
     }
 
     /**
-     * 项目位置
-     * @param programLocaltion 项目位置
+     * 
+     * @param programLocaltion 
      */
     public void setProgramLocaltion(String programLocaltion) {
         this.programLocaltion = programLocaltion == null ? null : programLocaltion.trim();
     }
 
     /**
-     * 
-     * @return program_localtion_friendly 
+     * 友好的项目地址
+     * @return program_localtion_friendly 友好的项目地址
      */
     public String getProgramLocaltionFriendly() {
         return programLocaltionFriendly;
     }
 
     /**
-     * 
-     * @param programLocaltionFriendly 
+     * 友好的项目地址
+     * @param programLocaltionFriendly 友好的项目地址
      */
     public void setProgramLocaltionFriendly(String programLocaltionFriendly) {
         this.programLocaltionFriendly = programLocaltionFriendly == null ? null : programLocaltionFriendly.trim();
@@ -569,6 +574,38 @@ public class SYFCSalesNo {
     }
 
     /**
+     * 
+     * @return remark 
+     */
+    public String getRemark() {
+        return remark;
+    }
+
+    /**
+     * 
+     * @param remark 
+     */
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
+    }
+
+    /**
+     * 
+     * @return data_status 
+     */
+    public DataStatus getDataStatus() {
+        return dataStatus;
+    }
+
+    /**
+     * 
+     * @param dataStatus 
+     */
+    public void setDataStatus(DataStatus dataStatus) {
+        this.dataStatus = dataStatus;
+    }
+
+    /**
      * 创建人
      * @return create_uid 创建人
      */
@@ -617,34 +654,18 @@ public class SYFCSalesNo {
     }
 
     /**
-     * 修改时间
-     * @return update_time 修改时间
+     * 创建时间
+     * @return update_time 创建时间
      */
     public Date getUpdateTime() {
         return updateTime;
     }
 
     /**
-     * 修改时间
-     * @param updateTime 修改时间
+     * 创建时间
+     * @param updateTime 创建时间
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-    /**
-     * 数据状态（0.未知，1.正常，-1.删除)
-     * @return data_status 数据状态（0.未知，1.正常，-1.删除)
-     */
-    public DataStatus getDataStatus() {
-        return dataStatus;
-    }
-
-    /**
-     * 数据状态（0.未知，1.正常，-1.删除)
-     * @param dataStatus 数据状态（0.未知，1.正常，-1.删除)
-     */
-    public void setDataStatus(DataStatus dataStatus) {
-        this.dataStatus = dataStatus;
     }
 }

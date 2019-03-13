@@ -4,7 +4,6 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>transform</artifactId>
-	<packaging>pom</packaging>
 
 	<name>transform</name>
 	<parent>
@@ -65,7 +64,14 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
+			<!-- maven resource filter 可以在打包时将properties文件的值替换为maven的值 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -83,15 +89,14 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.hzcf.variable.VariableBootStarp</mainClass>
+							<mainClass>com.hanson.transform.TransformBootStarp</mainClass>
 						</manifest>
 					</archive>
 
 					<!--打jar时排除编译完成的classes目录下的一些文件 -->
 					<excludes>
-						<exclude>application.properties</exclude>
-						<exclude>logback.xml</exclude>
-						<exclude>bin/**</exclude>
+						<!-- <exclude>application.properties</exclude> <exclude>logback.xml</exclude> 
+							<exclude>bin/**</exclude> -->
 					</excludes>
 				</configuration>
 			</plugin>
@@ -110,6 +115,55 @@
 						<goals>
 							<goal>repackage</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<delimiters>
+						<delimiter>${*}</delimiter>
+					</delimiters>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/classes</outputDirectory>
+							<useDefaultDelimiters>false</useDefaultDelimiters>
+							<delimiters>
+								<delimiter>@</delimiter>
+							</delimiters>
+							<resources>
+								<resource>
+									<directory>src/main/java</directory>
+									<includes>
+										<include>**/*.xml</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+								<resource>
+									<directory>src/main/resources/</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>**/*.yml</include>
+										<include>**/*.properties</include>
+										<include>**/*.xml</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

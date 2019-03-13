@@ -75,7 +75,7 @@ public class SYFCSalesNoExample {
     }
 
     /**
-     * tb_syfc_sales_no 2019-02-09
+     * tb_syfc_sales_no 2019-02-28
      */
     protected abstract static class GeneratedCriteria {
         protected List<Criterion> criteria;
@@ -1728,6 +1728,136 @@ public class SYFCSalesNoExample {
             return (Criteria) this;
         }
 
+        public Criteria andRemarkIsNull() {
+            addCriterion("remark is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIsNotNull() {
+            addCriterion("remark is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkEqualTo(String value) {
+            addCriterion("remark =", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotEqualTo(String value) {
+            addCriterion("remark <>", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkGreaterThan(String value) {
+            addCriterion("remark >", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkGreaterThanOrEqualTo(String value) {
+            addCriterion("remark >=", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLessThan(String value) {
+            addCriterion("remark <", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLessThanOrEqualTo(String value) {
+            addCriterion("remark <=", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLike(String value) {
+            addCriterion("remark like", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotLike(String value) {
+            addCriterion("remark not like", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIn(List<String> values) {
+            addCriterion("remark in", values, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotIn(List<String> values) {
+            addCriterion("remark not in", values, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkBetween(String value1, String value2) {
+            addCriterion("remark between", value1, value2, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotBetween(String value1, String value2) {
+            addCriterion("remark not between", value1, value2, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusIsNull() {
+            addCriterion("data_status is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusIsNotNull() {
+            addCriterion("data_status is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusEqualTo(DataStatus value) {
+            addCriterion("data_status =", value, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusNotEqualTo(DataStatus value) {
+            addCriterion("data_status <>", value, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusGreaterThan(DataStatus value) {
+            addCriterion("data_status >", value, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusGreaterThanOrEqualTo(DataStatus value) {
+            addCriterion("data_status >=", value, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusLessThan(DataStatus value) {
+            addCriterion("data_status <", value, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusLessThanOrEqualTo(DataStatus value) {
+            addCriterion("data_status <=", value, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusIn(List<DataStatus> values) {
+            addCriterion("data_status in", values, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusNotIn(List<DataStatus> values) {
+            addCriterion("data_status not in", values, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusBetween(DataStatus value1, DataStatus value2) {
+            addCriterion("data_status between", value1, value2, "dataStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataStatusNotBetween(DataStatus value1, DataStatus value2) {
+            addCriterion("data_status not between", value1, value2, "dataStatus");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUidIsNull() {
             addCriterion("create_uid is null");
             return (Criteria) this;
@@ -1967,66 +2097,6 @@ public class SYFCSalesNoExample {
             addCriterion("update_time not between", value1, value2, "updateTime");
             return (Criteria) this;
         }
-
-        public Criteria andDataStatusIsNull() {
-            addCriterion("data_status is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusIsNotNull() {
-            addCriterion("data_status is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusEqualTo(DataStatus value) {
-            addCriterion("data_status =", value, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusNotEqualTo(DataStatus value) {
-            addCriterion("data_status <>", value, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusGreaterThan(DataStatus value) {
-            addCriterion("data_status >", value, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusGreaterThanOrEqualTo(DataStatus value) {
-            addCriterion("data_status >=", value, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusLessThan(DataStatus value) {
-            addCriterion("data_status <", value, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusLessThanOrEqualTo(DataStatus value) {
-            addCriterion("data_status <=", value, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusIn(List<DataStatus> values) {
-            addCriterion("data_status in", values, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusNotIn(List<DataStatus> values) {
-            addCriterion("data_status not in", values, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusBetween(DataStatus value1, DataStatus value2) {
-            addCriterion("data_status between", value1, value2, "dataStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andDataStatusNotBetween(DataStatus value1, DataStatus value2) {
-            addCriterion("data_status not between", value1, value2, "dataStatus");
-            return (Criteria) this;
-        }
     }
 
     /**
@@ -2040,7 +2110,7 @@ public class SYFCSalesNoExample {
     }
 
     /**
-     * tb_syfc_sales_no 2019-02-09
+     * tb_syfc_sales_no 2019-02-28
      */
     public static class Criterion {
         private String condition;

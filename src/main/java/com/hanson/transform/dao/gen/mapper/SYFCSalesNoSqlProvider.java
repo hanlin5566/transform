@@ -109,6 +109,14 @@ public class SYFCSalesNoSqlProvider {
             sql.VALUES("other_build_count", "#{otherBuildCount,jdbcType=INTEGER}");
         }
         
+        if (record.getRemark() != null) {
+            sql.VALUES("remark", "#{remark,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getDataStatus() != null) {
+            sql.VALUES("data_status", "#{dataStatus,jdbcType=INTEGER}");
+        }
+        
         if (record.getCreateUid() != null) {
             sql.VALUES("create_uid", "#{createUid,jdbcType=INTEGER}");
         }
@@ -123,10 +131,6 @@ public class SYFCSalesNoSqlProvider {
         
         if (record.getUpdateTime() != null) {
             sql.VALUES("update_time", "#{updateTime,jdbcType=TIMESTAMP}");
-        }
-        
-        if (record.getDataStatus() != null) {
-            sql.VALUES("data_status", "#{dataStatus,jdbcType=TINYINT}");
         }
         
         return sql.toString();
@@ -163,11 +167,12 @@ public class SYFCSalesNoSqlProvider {
         sql.SELECT("shop_build_count");
         sql.SELECT("public_build_count");
         sql.SELECT("other_build_count");
+        sql.SELECT("remark");
+        sql.SELECT("data_status");
         sql.SELECT("create_uid");
         sql.SELECT("update_uid");
         sql.SELECT("create_time");
         sql.SELECT("update_time");
-        sql.SELECT("data_status");
         sql.FROM("tb_syfc_sales_no");
         applyWhere(sql, example, false);
         
@@ -278,6 +283,14 @@ public class SYFCSalesNoSqlProvider {
             sql.SET("other_build_count = #{otherBuildCount,jdbcType=INTEGER}");
         }
         
+        if (record.getRemark() != null) {
+            sql.SET("remark = #{remark,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getDataStatus() != null) {
+            sql.SET("data_status = #{dataStatus,jdbcType=INTEGER}");
+        }
+        
         if (record.getCreateUid() != null) {
             sql.SET("create_uid = #{createUid,jdbcType=INTEGER}");
         }
@@ -292,10 +305,6 @@ public class SYFCSalesNoSqlProvider {
         
         if (record.getUpdateTime() != null) {
             sql.SET("update_time = #{updateTime,jdbcType=TIMESTAMP}");
-        }
-        
-        if (record.getDataStatus() != null) {
-            sql.SET("data_status = #{dataStatus,jdbcType=TINYINT}");
         }
         
         sql.WHERE("id = #{id,jdbcType=INTEGER}");

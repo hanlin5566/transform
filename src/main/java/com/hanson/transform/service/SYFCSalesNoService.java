@@ -49,12 +49,26 @@ public interface SYFCSalesNoService {
 	 */
 	public void transform(String taskId);
 	/**
+	 * 清洗采集到的预售许可证详情到mysql
+	 * @param {@link User}
+	 * @param {@link PageInfo}
+	 * @return
+	 */
+	public void transformSalesNoDetail();
+	/**
+	 * 增量收取预售许可证详情
+	 * @param {@link User}
+	 * @param {@link PageInfo}
+	 * @return
+	 */
+	public void transformIncrementSalesNoDetail();
+	/**
 	 * 清洗售价列表
 	 * @param {@link User}
 	 * @param {@link PageInfo}
 	 * @return
 	 */
-	public void transformSalesPrice(String taskId);
+	public void transformSalesPrice();
 	
 	
 	

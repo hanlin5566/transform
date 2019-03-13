@@ -1,4 +1,4 @@
-package com.hanson;
+package com.hanson.transform;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

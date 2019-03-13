@@ -36,9 +36,9 @@ public interface SYFCSalesNoMapper {
         "public_build_no, other_build_no, ",
         "dwelling_build_count, shop_build_count, ",
         "public_build_count, other_build_count, ",
+        "remark, data_status, ",
         "create_uid, update_uid, ",
-        "create_time, update_time, ",
-        "data_status)",
+        "create_time, update_time)",
         "values (#{thirdNo,jdbcType=INTEGER}, #{thirdRecordId,jdbcType=VARCHAR}, ",
         "#{salesNo,jdbcType=VARCHAR}, #{company,jdbcType=VARCHAR}, ",
         "#{companyFriendly,jdbcType=VARCHAR}, #{programName,jdbcType=VARCHAR}, ",
@@ -51,9 +51,9 @@ public interface SYFCSalesNoMapper {
         "#{publicBuildNo,jdbcType=VARCHAR}, #{otherBuildNo,jdbcType=VARCHAR}, ",
         "#{dwellingBuildCount,jdbcType=INTEGER}, #{shopBuildCount,jdbcType=INTEGER}, ",
         "#{publicBuildCount,jdbcType=INTEGER}, #{otherBuildCount,jdbcType=INTEGER}, ",
+        "#{remark,jdbcType=VARCHAR}, #{dataStatus,jdbcType=INTEGER}, ",
         "#{createUid,jdbcType=INTEGER}, #{updateUid,jdbcType=INTEGER}, ",
-        "#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, ",
-        "#{dataStatus,jdbcType=TINYINT})"
+        "#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})"
     })
     @SelectKey(statement="SELECT LAST_INSERT_ID()", keyProperty="id", before=false, resultType=Integer.class)
     int insert(SYFCSalesNo record);
@@ -89,11 +89,12 @@ public interface SYFCSalesNoMapper {
         @Result(column="shop_build_count", property="shopBuildCount", jdbcType=JdbcType.INTEGER),
         @Result(column="public_build_count", property="publicBuildCount", jdbcType=JdbcType.INTEGER),
         @Result(column="other_build_count", property="otherBuildCount", jdbcType=JdbcType.INTEGER),
+        @Result(column="remark", property="remark", jdbcType=JdbcType.VARCHAR),
+        @Result(column="data_status", property="dataStatus", jdbcType=JdbcType.INTEGER),
         @Result(column="create_uid", property="createUid", jdbcType=JdbcType.INTEGER),
         @Result(column="update_uid", property="updateUid", jdbcType=JdbcType.INTEGER),
         @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="data_status", property="dataStatus", jdbcType=JdbcType.TINYINT)
+        @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP)
     })
     List<SYFCSalesNo> selectByExampleWithRowbounds(SYFCSalesNoExample example, RowBounds rowBounds);
 
@@ -124,11 +125,12 @@ public interface SYFCSalesNoMapper {
         @Result(column="shop_build_count", property="shopBuildCount", jdbcType=JdbcType.INTEGER),
         @Result(column="public_build_count", property="publicBuildCount", jdbcType=JdbcType.INTEGER),
         @Result(column="other_build_count", property="otherBuildCount", jdbcType=JdbcType.INTEGER),
+        @Result(column="remark", property="remark", jdbcType=JdbcType.VARCHAR),
+        @Result(column="data_status", property="dataStatus", jdbcType=JdbcType.INTEGER),
         @Result(column="create_uid", property="createUid", jdbcType=JdbcType.INTEGER),
         @Result(column="update_uid", property="updateUid", jdbcType=JdbcType.INTEGER),
         @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="data_status", property="dataStatus", jdbcType=JdbcType.TINYINT)
+        @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP)
     })
     List<SYFCSalesNo> selectByExample(SYFCSalesNoExample example);
 
@@ -138,8 +140,8 @@ public interface SYFCSalesNoMapper {
         "program_localtion, program_localtion_friendly, build_count, total_build_area, ",
         "sales_area, dwelling_area, shop_area, public_area, other_area, approve_date, ",
         "dwelling_build_no, shop_build_no, public_build_no, other_build_no, dwelling_build_count, ",
-        "shop_build_count, public_build_count, other_build_count, create_uid, update_uid, ",
-        "create_time, update_time, data_status",
+        "shop_build_count, public_build_count, other_build_count, remark, data_status, ",
+        "create_uid, update_uid, create_time, update_time",
         "from tb_syfc_sales_no",
         "where id = #{id,jdbcType=INTEGER}"
     })
@@ -169,11 +171,12 @@ public interface SYFCSalesNoMapper {
         @Result(column="shop_build_count", property="shopBuildCount", jdbcType=JdbcType.INTEGER),
         @Result(column="public_build_count", property="publicBuildCount", jdbcType=JdbcType.INTEGER),
         @Result(column="other_build_count", property="otherBuildCount", jdbcType=JdbcType.INTEGER),
+        @Result(column="remark", property="remark", jdbcType=JdbcType.VARCHAR),
+        @Result(column="data_status", property="dataStatus", jdbcType=JdbcType.INTEGER),
         @Result(column="create_uid", property="createUid", jdbcType=JdbcType.INTEGER),
         @Result(column="update_uid", property="updateUid", jdbcType=JdbcType.INTEGER),
         @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="data_status", property="dataStatus", jdbcType=JdbcType.TINYINT)
+        @Result(column="update_time", property="updateTime", jdbcType=JdbcType.TIMESTAMP)
     })
     SYFCSalesNo selectByPrimaryKey(Integer id);
 
@@ -206,11 +209,12 @@ public interface SYFCSalesNoMapper {
           "shop_build_count = #{shopBuildCount,jdbcType=INTEGER},",
           "public_build_count = #{publicBuildCount,jdbcType=INTEGER},",
           "other_build_count = #{otherBuildCount,jdbcType=INTEGER},",
+          "remark = #{remark,jdbcType=VARCHAR},",
+          "data_status = #{dataStatus,jdbcType=INTEGER},",
           "create_uid = #{createUid,jdbcType=INTEGER},",
           "update_uid = #{updateUid,jdbcType=INTEGER},",
           "create_time = #{createTime,jdbcType=TIMESTAMP},",
-          "update_time = #{updateTime,jdbcType=TIMESTAMP},",
-          "data_status = #{dataStatus,jdbcType=TINYINT}",
+          "update_time = #{updateTime,jdbcType=TIMESTAMP}",
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(SYFCSalesNo record);
