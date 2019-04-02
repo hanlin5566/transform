@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hanson.transform.dao.gen.entity.SYFCSalesNo;
 import com.hanson.transform.service.SYFCSalesNoService;
-import com.hzcf.base.response.ResponseData;
+import com.hanson.base.response.ResponseData;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

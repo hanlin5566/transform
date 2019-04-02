@@ -22,7 +22,7 @@ import com.hanson.transform.dao.gen.entity.SYFCSalesNo;
 import com.hanson.transform.dao.gen.entity.SYFCSalesNoExample;
 import com.hanson.transform.dao.gen.mapper.SYFCSalesNoMapper;
 import com.hanson.transform.service.SYFCSalesNoService;
-import com.hzcf.base.util.BeanUtils;
+import com.hanson.base.util.BeanUtils;
 
 /**
  * Create by hanlin on 2019年1月30日
