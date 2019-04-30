@@ -1,0 +1,24 @@
+﻿syfc_sales_num_detail--预售许可证详情
+syfc_new_build_detail--建筑详情
+
+syfc_sales_num_detail:syfc_new_build_detail N:N
+company 是关联
+syfc_sales_num_detail
+有项目地址、总面积、楼栋号
+syfc_new_build_detail
+楼盘总体销售情况
+楼栋地址、销售情况、项目名称、所属区、栋销售情况。
+syfc_new_build_house
+单栋的详情
+楼宇信息
+
+
+预售许可证 可关联 售价
+
+售价可以通过地址和开发商关联楼栋信息-显示每平数据
+
+
+syfc_new_build_detail-->楼盘信息（整个楼盘的楼栋信息）
+syfc_sales_num_detail-->预售许可证
+syfc_sales_price_detail-->楼栋（房屋）售价
+syfc_new_build_house-->房屋信息
