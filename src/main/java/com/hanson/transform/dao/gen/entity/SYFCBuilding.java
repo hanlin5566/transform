@@ -1,17 +1,18 @@
 package com.hanson.transform.dao.gen.entity;
 
-import com.hanson.base.enums.DataStatus;
-import com.hanson.transform.enums.BuildingStatusEnum;
-import com.hanson.transform.enums.BuildingTechEnum;
-import com.hanson.transform.enums.BuildingTypeEnum;
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.hanson.base.annotation.AutoWriteParam;
+import com.hanson.base.enums.DataStatus;
 import com.hanson.base.mybatis.serializer.DatePattern;
 import com.hanson.base.serializer.EnumJsonSerializer;
+import com.hanson.transform.enums.BuildingStatusEnum;
+import com.hanson.transform.enums.BuildingTechEnum;
+import com.hanson.transform.enums.BuildingTypeEnum;
 /**
  * tb_syfc_building 楼栋信息
  * @author huhanlin 2019-03-29
@@ -464,5 +465,15 @@ public class SYFCBuilding {
      */
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.thirdBuildId == ((SYFCBuilding)obj).getThirdBuildId();
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

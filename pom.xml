@@ -73,8 +73,14 @@
 			<artifactId>mybatis-boost</artifactId>
 			<version>1.1</version>
 		</dependency>
-		
-	</dependencies>
+        <dependency>
+            <groupId>com.hanson</groupId>
+            <artifactId>http-handler</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
 	
 	<build>
 		<resources>

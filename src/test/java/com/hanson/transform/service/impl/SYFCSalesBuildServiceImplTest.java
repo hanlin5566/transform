@@ -30,7 +30,8 @@ import com.hanson.transform.service.SYFCSalesBuildService;
 
 @RunWith(SpringJUnit4ClassRunner.class)  
 @SpringBootTest(classes = TransformBootStarp.class)
-@WebAppConfiguration  
+@WebAppConfiguration
+@Ignore
 public class SYFCSalesBuildServiceImplTest {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -51,8 +52,9 @@ public class SYFCSalesBuildServiceImplTest {
     }  
 
 	@Test
-	public void transform() {
-		buildService.transform();
+	@Ignore
+	public void saveCommunity() {
+		buildService.saveCommunity();
 	}
 	
 	@Test
@@ -73,6 +75,16 @@ public class SYFCSalesBuildServiceImplTest {
 	public void testCheckCommunity() {
 		buildService.checkCommunity();
 	}
+	@Test
+	@Ignore
+	public void testCheckBuilding() {
+		buildService.checkBuilding();
+	}
+	@Test
+	public void saveHouse() {
+		buildService.saveHouse();
+	}
+
 
 }
 

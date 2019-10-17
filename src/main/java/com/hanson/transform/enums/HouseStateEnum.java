@@ -15,6 +15,8 @@ public enum HouseStateEnum implements EnumType{
 	    NOW_SALE(3, "现售"),//#现售CCFF00
 	    CERTIFIED(4, "已发证"),//#已发证0099ff
 	    CLOSE_DOWN(5, "查封"),//#查封ff0000
+	    CAN_NOT_SALE(6, "不可售"),//#可售00ff00
+	    CAN_SALE_IMPAWN(7, "可售(在建抵押)"),//#可售00ff00
 	    ;
 
 

@@ -1,12 +1,18 @@
 package com.hanson.transform.service.impl;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.hanson.base.enums.DataStatus;
+import com.hanson.base.util.DateUtils;
+import com.hanson.transform.dao.gen.entity.*;
+import com.hanson.transform.dao.gen.mapper.SYFCBuildingMapper;
+import com.hanson.transform.dao.gen.mapper.SYFCCommunityMapper;
+import com.hanson.transform.dao.gen.mapper.SYFCHouseMapper;
+import com.hanson.transform.enums.BuildingStatusEnum;
+import com.hanson.transform.enums.BuildingTypeEnum;
+import com.hanson.transform.enums.DistrictEnum;
+import com.hanson.transform.enums.HouseStateEnum;
+import com.hanson.transform.service.SYFCSalesBuildService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +22,15 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.hanson.base.enums.DataStatus;
-import com.hanson.base.util.DateUtils;
-import com.hanson.transform.dao.gen.entity.SYFCBuilding;
-import com.hanson.transform.dao.gen.entity.SYFCBuildingExample;
-import com.hanson.transform.dao.gen.entity.SYFCCommunity;
-import com.hanson.transform.dao.gen.entity.SYFCCommunityExample;
-import com.hanson.transform.dao.gen.mapper.SYFCBuildingMapper;
-import com.hanson.transform.dao.gen.mapper.SYFCCommunityMapper;
-import com.hanson.transform.enums.BuildingStatusEnum;
-import com.hanson.transform.enums.BuildingTypeEnum;
-import com.hanson.transform.enums.DistrictEnum;
-import com.hanson.transform.service.SYFCSalesBuildService;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Create by hanlin on 2019年1月30日
@@ -52,41 +51,16 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 	SYFCCommunityMapper communityMapper;
 	@Autowired
 	SYFCBuildingMapper buildingMapper;
+	@Autowired
+	SYFCHouseMapper houseMapper;
 	
 	@Override
-	public void transform() {
+	public void saveCommunity() {
 		//销售日期倒序,已经采集完详情的
 		Query query = new Query();  
 		query.with(new Sort(new Order(Direction.DESC,"start_sales_date")));
-		query.addCriteria(Criteria.where("collect_state").is(1));
+		query.addCriteria(Criteria.where("collect_state").is(1).and("trans_state").ne(1));
 		List<JSONObject> communitylist = mongoTemplate.find(query,JSONObject.class, BUILD_COLLECTION);
-		
-		
-//		//可以通过buildingId关联售价
-//		Query price_query = new Query(); 
-//		price_query.with(new Sort(new Order(Direction.DESC,"approve_date")));
-//		price_query.addCriteria(Criteria.where("collect_state").is(1));
-////		price_query.addCriteria(Criteria.where("company").is(company).and("sales_no").in(sales_num_list));
-//		List<JSONObject> priceList = mongoTemplate.find(price_query,JSONObject.class, PRICE_COLLECTION);
-//		Map<Integer,JSONObject> buildingId_priceInfo = new HashMap<Integer,JSONObject>();
-//		//可以通过buuildId关联售价信息
-//		for (JSONObject price : priceList) {
-//			//楼栋的地址
-//			int buildingId = price.getInteger("third_record_id");
-//			buildingId_priceInfo.put(buildingId, price);
-//		}
-//		
-//		//所有爬取的预售许可证，可以通过salesNo关联
-//		Query num_query = new Query();  
-//		num_query.with(new Sort(new Order(Direction.DESC,"date")));
-////		num_query.addCriteria(Criteria.where("company").is(company).and("date").lt(start_sales_date));
-//		List<JSONObject> numlist = mongoTemplate.find(num_query,JSONObject.class, NUM_COLLECTION);
-//		//此公司拿到的销售许可证号
-//		Map<String,JSONObject> salesNum_SalesNumInfo = new HashMap<String,JSONObject>();
-//		for (JSONObject num : numlist ) {
-//			String sales_no = num.getString("sales_no");
-//			salesNum_SalesNumInfo.put(sales_no, num);
-//		}
 		
 		//所有的楼盘
 		for (JSONObject community : communitylist) {
@@ -101,11 +75,15 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 					districtEnum = DistrictEnum.textOf(district);
 				} catch (Exception e) {
 					//未解析到主区域，解析副区域
-					logger.error("未解析到区域,主内容{},唯一标识:{}",district,community.get("third_record_id"));
+					logger.warn("未解析到区域,主内容{},唯一标识:{}",district,community.get("third_record_id"));
 					try {
 						districtEnum = DistrictEnum.textOf(subordinate_district);
 					} catch (Exception e2) {
-						logger.error("未解析到区域,副内容{},唯一标识:{}",district,community.get("third_record_id"));
+						logger.warn("未解析到区域,副内容{},唯一标识:{}",subordinate_district,community.get("third_record_id"));
+					}
+					if(districtEnum.code() == DistrictEnum.UNKNOWN.code()) {
+						logger.error("未解析到区域,主内容｛{}｝，副内容{},唯一标识:{}",district,subordinate_district,community.get("third_record_id"));
+						
 					}
 				}
 				//楼栋信息
@@ -134,12 +112,32 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 				record.setThirdRecordId(community.getInteger("third_record_id"));
 				record.setBuildCount(builds.size());
 				this.saveCommunity(record);
-				saveBuilds(community,record);
+//				Update update = new Update();
+//				update.addToSet("trans_state", 1);
+//				Query updateQuery = new Query();
+//				updateQuery.addCriteria(Criteria.where("third_record_id").is(community.get("third_record_id")));
+//				mongoTemplate.updateFirst(updateQuery , update , JSONObject.class);
 			} catch (Exception e) {
 				logger.error("转换楼盘错误,唯一标识:{}",community.get("third_record_id"),e);
 			}
 		}
 	}
+
+	/**
+	 * 从已经清洗到mysql的community,在MongoDB中拿到此community信息构建builds
+	 */
+	public void saveBuilds() {
+		SYFCCommunityExample example = new SYFCCommunityExample();;
+		example.createCriteria().andDataStatusEqualTo(DataStatus.NORMAL);
+		List<SYFCCommunity> selectByExample = communityMapper.selectByExample(example);
+		for (SYFCCommunity record : selectByExample) {
+			Query query = new Query();
+			query.addCriteria(Criteria.where("third_record_id").is(String.valueOf(record.getThirdRecordId())));
+			JSONObject community = mongoTemplate.findOne(query , JSONObject.class,BUILD_COLLECTION);
+			this.saveBuilds(community,record);
+		}
+	}
+	
 	/**
 	 * 保存楼盘的每栋建筑
 	 * @param community
@@ -155,6 +153,18 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 			SYFCBuilding building = new SYFCBuilding();
 			//每栋的信息
 			JSONObject buildJson = (JSONObject)build;
+			//转换成纯数字
+			try {
+				buildJson.getInteger("third_record_id");
+			} catch (Exception e) {
+				//只保留数字
+				String building_id = buildJson.getString("third_record_id");
+				String regEx="[^0-9]";  
+				Pattern p = Pattern.compile(regEx);  
+				Matcher m = p.matcher(building_id);  
+				buildJson.put("third_record_id",m.replaceAll(""));
+			}
+			
 			Integer buildingId = buildJson.getInteger("third_record_id");
 			String build_location = buildJson.getString("build_location");
 			int topTier = 0;
@@ -168,11 +178,6 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 			Query price_query = new Query(); 
 			price_query.addCriteria(Criteria.where("collect_state").is(1).and("third_record_id").is(buildingId));
 			JSONObject buildingPrice = mongoTemplate.findOne(price_query,JSONObject.class, PRICE_COLLECTION);
-			
-			//存储房屋信息
-			Query house_query = new Query(); 
-			house_query.addCriteria(Criteria.where("collect_state").is(1).and("third_record_id").is(buildingId));
-			mongoTemplate.findOne(house_query, JSONObject.class,HOUSE_COLLECTION);
 			
 			if(buildingPrice != null) {
 				logger.debug("每栋的信息,开发商:{},楼盘:{},地址:{},唯一标识:{}",company,community.get("program_describe"),build_location,community.get("third_record_id"));
@@ -191,16 +196,20 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 						//每个房源的价格
 						JSONObject housePriceJSON = (JSONObject)housePrice;
 //								String house_localtion = housePriceJSON.getString("house_localtion");//房屋地址
-						sales_num = housePriceJSON.getString("sales_no");//预售许可证
+//								String house_structure = housePriceJSON.getString("house_structure");//房屋结构
+//								HouseStateEnum state = HouseStateEnum.codeOf(houseJSON.getInteger("sales_state_enum"));
 //								String house_tier = housePriceJSON.getString("house_tier");//房屋楼层
-//								String house_state = housePriceJSON.getString("house_state");//房屋状态
-//								double house_build_area = housePriceJSON.containsKey("house_build_area")?housePriceJSON.getDouble("house_build_area"):0.0;;//建筑面积
+								sales_num = housePriceJSON.getString("sales_no");//预售许可证
 //								String total_price = housePriceJSON.getString("total_price");//总价
+//								String house_state = housePriceJSON.getString("house_state");//房屋状态
+//								String house_use = housePriceJSON.getString("house_use");//房屋用途
+//								String unit_price = housePriceJSON.getString("unit_price");//房屋单价
+//								double house_build_area = housePriceJSON.containsKey("house_build_area")?housePriceJSON.getDouble("house_build_area"):0.0;;//建筑面积
 						try {
 							build_type_enum = BuildingTypeEnum.textOf(housePriceJSON.getString("house_use"));//用途
 						} catch (Exception e) {
 							buildingStatus = BuildingStatusEnum.BUILDING_TYPE_FORMAT_ERROR;
-							logger.error("房屋类型解析异常,类型:{},楼盘第三方ID:{},建筑第三方ID:{}",housePriceJSON.getString("house_use"),community.get("third_record_id"),buildingId);
+							logger.warn("房屋类型解析异常,类型:{},楼盘第三方ID:{},建筑第三方ID:{}",housePriceJSON.getString("house_use"),community.get("third_record_id"),buildingId);
 						}
 						//有些已售的房屋没有单价，不计入平均价格
 						if(housePriceJSON.containsKey("unit_price")) {
@@ -225,6 +234,7 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 				Date approve_date = buildingPrice.getDate("approve_date");
 				building.setApproveDate(approve_date);
 				//关联预售许可证拿到楼栋号
+                //FIXME:看看有没有更好的方式关联到预售许可证
 				Query num_query = new Query();  
 				num_query.addCriteria(Criteria.where("sales_no").is(sales_num));
 				JSONObject salesNumJSON = mongoTemplate.findOne(num_query,JSONObject.class, NUM_COLLECTION);
@@ -239,13 +249,13 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 					building.setSalesNum(sales_num);
 				}else {
 					buildingStatus = BuildingStatusEnum.SALES_NUM_NOT_FOUND;
-					logger.error("未找到预售许可信息,许可证号{},楼盘第三方ID:{},建筑第三方ID:{}",sales_num,community.get("third_record_id"),buildingId);
+					logger.warn("未找到【预售许可信息】,许可证号{},楼盘第三方ID:{},建筑第三方ID:{}",sales_num,community.get("third_record_id"),buildingId);
 				}
 			}else {
 				String remark = String.format("未取到售价信息,开发商:%s,楼盘:%s,地址:%s,楼盘第三方ID:%s,建筑第三方ID:%s",company,community.get("program_describe"),build_location,community.get("third_record_id"),buildingId);
 				building.setRemark(remark);
 				buildingStatus = BuildingStatusEnum.PRICE_INFO_NOT_FOUND;
-				logger.error("未取到售价信息,开发商:{},楼盘:{},地址:{},楼盘第三方ID:{},建筑第三方ID:{}",company,community.get("program_describe"),build_location,community.get("third_record_id"),buildingId);
+				logger.warn("未取到｛售价信息｝,开发商:{},楼盘:{},地址:{},楼盘第三方ID:{},建筑第三方ID:{}",company,community.get("program_describe"),build_location,community.get("third_record_id"),buildingId);
 			}
 			building.setCommunityId(record.getId());
 			building.setThirdBuildId(buildingId);
@@ -270,6 +280,119 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 			this.saveBuilding(building);
 		 }
 	}
+
+	/**
+	 * NOT TODO根据洗到mysql的build信息生成houses信息.
+	 * 由于house数据太多了,只能通过是否清洗标识来标识是否清洗完成,减少数据量
+	 * 与清洗mongo的house逻辑是一致的,只不过一个存储到mysql一个存储到mongo
+	 */
+	public void saveHouse() {
+		Query buildingQuery = new Query();
+		buildingQuery.addCriteria(Criteria.where("gen_mongo_house").ne(1));
+		List<JSONObject> buidingList = mongoTemplate.find(buildingQuery,JSONObject.class, "syfc_building");
+		for (JSONObject build : buidingList) {
+			Integer building_id = build.getInteger("building_id");
+			Integer community_id = build.getInteger("community_id");
+			try {
+				//通过building_id查找syfc_new_build_house 采集的house信息
+				Query houseQuery = new Query();
+				houseQuery.addCriteria(Criteria.where("third_record_id").is(String.valueOf(building_id)));
+				JSONObject buildingHouses = mongoTemplate.findOne(houseQuery,JSONObject.class, "syfc_new_build_house");
+				if(buildingHouses != null && buildingHouses.containsKey("house_detail_list")) {
+					JSONArray houseList = buildingHouses.getJSONArray("house_detail_list");
+					//查找售价信息
+					Query price_query = new Query();
+					price_query.addCriteria(Criteria.where("collect_state").is(1).and("third_record_id").is(building_id));
+					Map<Integer,JSONObject> priceMap = new HashMap<>();
+					JSONObject buildingPrice = mongoTemplate.findOne(price_query,JSONObject.class, "syfc_sales_price_detail");
+					if(buildingPrice != null) {
+						JSONArray jsonArray = buildingPrice.getJSONArray("sales_price_detail_list");
+						//每一楼
+						for (Object houseTierPirce : jsonArray) {
+							JSONArray housePriceListJson = (JSONArray)houseTierPirce;
+							for (Object housePirce : housePriceListJson) {
+								//每个房间
+								JSONObject housePriceJSON = (JSONObject)housePirce;
+								//可售才有售价和id
+								if(HouseStateEnum.textOf(housePriceJSON.getString("house_state")).code() == HouseStateEnum.CAN_SALE.code()) {
+									if(housePriceJSON.containsKey("third_record_id")) {
+										priceMap.put(housePriceJSON.getInteger("third_record_id"), housePriceJSON);
+									}else {
+										logger.warn("房屋可售但未取到售价{}",housePriceJSON.toJSONString());
+									}
+								}
+							}
+						}
+					}
+					for (Object houseTier : houseList) {
+						JSONArray housePriceListJson = (JSONArray)houseTier;
+						for (Object house : housePriceListJson) {
+							JSONObject houseJSON = (JSONObject)house;
+							HouseStateEnum houseState = HouseStateEnum.codeOf(houseJSON.getInteger("sales_state_enum"));
+							Integer houseId = houseJSON.getInteger("third_record_id");
+							SYFCHouse houseEntity = new SYFCHouse();
+							houseEntity.setThirdHouseId(houseId);
+							//这个应该是mysql里的buildingID
+							SYFCBuildingExample example = new SYFCBuildingExample();
+							example.createCriteria().andThirdBuildIdEqualTo(building_id);
+							List<SYFCBuilding> selectByExample = buildingMapper.selectByExample(example);
+							if(selectByExample !=null && selectByExample.size()>0) {
+								Integer mysqlBuildingId = selectByExample.get(0).getId();
+								houseEntity.setBuildingId(mysqlBuildingId);
+								houseEntity.setHouseStatus(houseState);
+								//只有可售才有售价
+								if(houseState.code() == HouseStateEnum.CAN_SALE.code()) {
+									if(priceMap.containsKey(houseId)) {
+										JSONObject housePriceJSON = priceMap.get(houseId);
+										houseEntity.setUnitPrice(housePriceJSON.getBigDecimal("unit_price"));
+										houseEntity.setTotalPrice(housePriceJSON.getBigDecimal("total_price"));
+										houseEntity.setHouseStructure(housePriceJSON.getString("house_structure"));
+										houseEntity.setHouseType(housePriceJSON.getString("house_use"));
+									}else {
+										logger.warn("房屋可售但未取到售价,房屋id{},buildid{}",houseId,building_id);
+									}
+								}
+								houseEntity.setHouseNum(houseJSON.getString("house_no"));
+								houseEntity.setHouseTier(houseJSON.getString("house_tier"));
+								//面积还未采集
+								//					houseEntity.setInsideArea(insideArea);
+								//					houseEntity.setApportionArea(apportionArea);
+								//					houseEntity.setBalconyArea(balconyArea);
+								//					houseEntity.setSalesArea(salesArea);
+								//					houseEntity.setBuildArea(buildArea);
+								//					houseEntity.setApportionRatio(apportionRatio);
+								//					houseEntity.setRemark(remark);
+								this.saveHouse(houseEntity);
+								//更新build同步状态
+								this.updateBuildingInfo(building_id);
+							}else {
+								logger.warn("建筑信息未同步,第三方ID{}",building_id);
+							}
+						}
+					}
+				}else {
+					logger.warn("{}未采集house,创建采集house任务",building_id);
+					//未采集house,创建采集house任务
+					Query updateQuery = new Query();
+					updateQuery.addCriteria(Criteria.where("third_record_id").is(String.valueOf(building_id)));
+					Update update = Update.update("collect_state", 0)
+							.addToSet("parent_third_record_id",String.valueOf(community_id) )
+							.addToSet("third_record_id", String.valueOf(building_id));
+					mongoTemplate.updateFirst(updateQuery, update, JSONObject.class,"syfc_new_build_house");
+				}
+			} catch (Exception e) {
+				logger.error("房屋可售但未取到售价,community_id{},buildid{}",building_id,community_id);
+			}
+		}
+	}
+
+	
+	private void updateBuildingInfo(int buildingId) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("building_id").is(buildingId));
+		Update update = Update.update("gen_mongo_house", 1);
+		mongoTemplate.upsert(query , update, JSONObject.class,"syfc_building");
+	}
 	
 	@Override
 	public void checkCommunity() {
@@ -292,14 +415,75 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 				community.setThirdRecordId(json.getInteger("third_record_id"));
 				tempList.add(community);
 			}
+			logger.info("已清洗楼盘总量{}",transformList.size());
+			logger.info("采集楼盘总量{}",spiderList.size());
 			//取差集
 			tempList.removeAll(transformList);
+			logger.info("未采集楼盘总量{}",tempList.size());
 			for (SYFCCommunity syfcCommunity : tempList) {
 				logger.info("楼盘未清洗，唯一标识:{}",syfcCommunity.getThirdRecordId());
 			};
 		}
 	}
-	
+
+	@Override
+	public void checkBuilding() {
+		SYFCBuildingExample example = new SYFCBuildingExample();
+		example.createCriteria().andDataStatusEqualTo(DataStatus.NORMAL);
+		List<SYFCBuilding> transformList = buildingMapper.selectByExample(example);
+		Query query = new Query();
+		query.with(new Sort(new Order(Direction.DESC,"start_sales_date")));
+		query.addCriteria(Criteria.where("collect_state").is(1));
+		List<JSONObject> spiderList = mongoTemplate.find(query,JSONObject.class, BUILD_COLLECTION);
+		List<JSONObject> allBuildList = new ArrayList<>();
+		for (Iterator<JSONObject> iterator = spiderList.iterator(); iterator.hasNext(); ) {
+			JSONObject next =  iterator.next();
+			JSONArray buildList = next.getJSONArray("build_detail_list");
+			for (Iterator<Object> objectIterator = buildList.iterator(); objectIterator.hasNext(); ) {
+				JSONObject o =  (JSONObject)objectIterator.next();
+				allBuildList.add(o);
+			}
+		}
+		logger.info("已清洗建筑总量{}",transformList.size());
+		logger.info("采集建筑总量{}",allBuildList.size());
+		List<SYFCBuilding> tempList = new ArrayList<SYFCBuilding>();
+		for (JSONObject json : allBuildList) {
+			SYFCBuilding building = new SYFCBuilding();
+            //转换成纯数字
+            try {
+                json.getInteger("third_record_id");
+            } catch (Exception e) {
+                //只保留数字
+                String building_id = json.getString("third_record_id");
+                String regEx="[^0-9]";
+                Pattern p = Pattern.compile(regEx);
+                Matcher m = p.matcher(building_id);
+                json.put("third_record_id",m.replaceAll(""));
+            }
+			building.setThirdBuildId(json.getInteger("third_record_id"));
+			tempList.add(building);
+		}
+		if(transformList.size() > allBuildList.size()) {
+			logger.error("清洗建筑大于采集建筑，与可能有重复或被删除的数据。清洗建筑:{},采集建筑:{},",transformList.size(),allBuildList.size());
+			//取差集
+			transformList.removeAll(tempList);
+			logger.info("多清洗的建筑总量{}",transformList.size());
+			for (SYFCBuilding syfcBuilding : transformList) {
+				logger.info("多清洗的，唯一标识:{}",syfcBuilding.getThirdBuildId());
+			};//取差集
+		}else if(transformList.size() == allBuildList.size()) {
+			logger.info("同步已经完成。清洗建筑:{},采集建筑:{},",transformList.size(),allBuildList.size());
+		}else if(transformList.size() < allBuildList.size()) {
+			logger.info("还有{}条数据未清洗。清洗建筑:{},采集建筑:{},",(allBuildList.size() - transformList.size()),transformList.size(),allBuildList.size());
+			tempList.removeAll(transformList);
+			logger.info("未采集建筑总量{}",tempList.size());
+			for (SYFCBuilding syfcBuilding : tempList) {
+				logger.info("建筑未清洗，唯一标识:{}",syfcBuilding.getThirdBuildId());
+			};
+		}
+
+	}
+
 	/**
 	 * 
 	 * @param record
@@ -327,7 +511,6 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 	}
 	
 	private int saveBuilding(SYFCBuilding record) {
-		int communityId = 0;
 		SYFCBuildingExample example = new SYFCBuildingExample();
 		example.createCriteria().andThirdBuildIdEqualTo(record.getThirdBuildId()).andDataStatusEqualTo(DataStatus.NORMAL);;
 		List<SYFCBuilding> selectByExample = buildingMapper.selectByExample(example);
@@ -345,6 +528,27 @@ public class SYFCSalesBuildServiceImpl implements SYFCSalesBuildService{
 			record.setDataStatus(DataStatus.NORMAL);
 			buildingMapper.insertSelective(record);
 		}
-		return communityId;
+		return record.getId();
+	}
+	
+	private int saveHouse(SYFCHouse record) {
+		SYFCHouseExample example = new SYFCHouseExample();
+		example.createCriteria().andBuildingIdEqualTo(record.getBuildingId()).andHouseNumEqualTo(record.getHouseNum()).andDataStatusEqualTo(DataStatus.NORMAL);;
+		List<SYFCHouse> selectByExample = houseMapper.selectByExample(example);
+		if(selectByExample.size()>0) {
+			SYFCHouse house = selectByExample.get(0);
+			record.setUpdateUserId(1);
+			record.setUpdateTime(new Date());
+			record.setId(house.getId());
+			houseMapper.updateByPrimaryKeySelective(record);
+		}else {
+			record.setCreateUserId(1);
+			record.setUpdateUserId(1);
+			record.setCreateTime(new Date());
+			record.setUpdateTime(new Date());
+			record.setDataStatus(DataStatus.NORMAL);
+			houseMapper.insertSelective(record);
+		}
+		return record.getId();
 	}
 }

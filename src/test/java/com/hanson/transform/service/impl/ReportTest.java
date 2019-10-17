@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.aspectj.lang.annotation.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import com.hanson.transform.service.SYFCSalesBuildService;
 @RunWith(SpringJUnit4ClassRunner.class)  
 @SpringBootTest(classes = TransformBootStarp.class)
 @WebAppConfiguration  
+@Ignore
 public class ReportTest {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
